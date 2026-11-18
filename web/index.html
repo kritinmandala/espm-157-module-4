@@ -3,44 +3,272 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Carbon dioxide emissions</title>
+    <title>Arctic sea ice and atmospheric CO₂ over time</title>
+    <meta
+      name="description"
+      content="Explore the relationship between annual mean atmospheric CO₂ at Mauna Loa and September Arctic sea ice extent, 1979–2025."
+    />
     <link rel="stylesheet" href="style.css" />
     <script type="module" src="app.js"></script>
   </head>
   <body>
-    <main>
-      <h1>Carbon dioxide emissions</h1>
-      <p>
-        Choose a country and a measure to see how its fossil carbon dioxide
-        emissions have changed. The data come from
-        <a href="https://github.com/owid/co2-data">Our World in Data</a>, the
-        same file we used in the climate module.
+    <a class="skip-link" href="#main">Skip to the app</a>
+
+    <header class="hero">
+      <p class="eyebrow">ESPM 157 · Applications module</p>
+      <h1>Arctic sea ice and atmospheric CO₂</h1>
+      <p class="lede">
+        September is when Arctic sea ice reaches its yearly minimum. This app puts that
+        September extent next to the year's average atmospheric CO₂ at Mauna Loa, Hawaii.
+        Pick a year to see the values, the 1979–2025 record, and the ice on a polar map.
+      </p>
+    </header>
+
+    <main id="main">
+      <section class="controls-card" aria-labelledby="controls-title">
+        <h2 id="controls-title">Choose a year</h2>
+        <form id="controls" class="controls">
+          <div class="control">
+            <label for="year">Year for the numbers, charts and map</label>
+            <select id="year" disabled></select>
+            <p class="hint">
+              Pick a year to show its CO₂ value, sea ice value, the charts and the map.
+              The latest complete year is 2025.
+            </p>
+          </div>
+          <div class="control">
+            <label for="map-year">
+              Map year: <output id="map-year-label" for="map-year">2012</output>
+            </label>
+            <input
+              id="map-year"
+              type="range"
+              min="1979"
+              max="2025"
+              step="1"
+              value="2012"
+              disabled
+            />
+            <p class="hint">
+              Slide to change only the map. Pick a year in the dropdown to bring back the
+              numbers and charts.
+            </p>
+          </div>
+        </form>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite">
+        Loading CO₂ and sea ice data…
       </p>
 
-      <form id="controls">
-        <label>
-          Country
-          <select id="country"></select>
-        </label>
-        <label>
-          Measure
-          <select id="measure">
-            <option value="co2">Annual emissions</option>
-            <option value="co2_per_capita">Emissions per person</option>
-            <option value="share_global_co2">Share of global emissions</option>
-            <option value="cumulative_co2">Cumulative emissions</option>
-          </select>
-        </label>
-        <label>
-          First year <output id="start-label"></output>
-          <input id="start" type="range" min="1850" max="2020" step="10" value="1950" />
-        </label>
-      </form>
+      <p id="map-only-note" class="map-only-note" role="status" hidden>
+        Map only. Pick a year in the dropdown above to bring back the numbers and charts.
+      </p>
 
-      <figure>
-        <div id="chart"><p id="status">Loading data…</p></div>
-        <figcaption id="caption"></figcaption>
-      </figure>
+      <section id="map-section" class="map-section" aria-labelledby="map-title">
+        <div class="section-heading">
+          <h2 id="map-title">September sea ice on a polar map</h2>
+          <p>
+            The map uses the NSIDC polar stereographic projection, centered on the North
+            Pole. The filled blue area is the selected September; the orange dashed line
+            is September 1979 for comparison.
+          </p>
+        </div>
+
+        <div class="map-toolbar" role="group" aria-label="Map controls">
+          <button id="zoom-in" type="button" aria-label="Zoom in" disabled>+</button>
+          <button id="zoom-out" type="button" aria-label="Zoom out" disabled>−</button>
+          <button id="reset-view" type="button" disabled>Reset view</button>
+        </div>
+
+        <figure class="map-figure">
+          <div
+            id="map"
+            class="map"
+            role="group"
+            aria-label="Interactive polar map of September Arctic sea ice extent"
+          ></div>
+          <figcaption id="map-caption"></figcaption>
+          <ul class="legend" id="map-legend" aria-label="Map legend">
+            <li>
+              <span class="swatch swatch-ice" aria-hidden="true"></span>
+              September <span id="legend-year">2012</span> sea ice
+            </li>
+            <li>
+              <span class="swatch swatch-baseline" aria-hidden="true"></span>
+              September 1979 outline
+            </li>
+            <li><span class="swatch swatch-land" aria-hidden="true"></span> Land</li>
+            <li><span class="swatch swatch-ocean" aria-hidden="true"></span> Ocean</li>
+          </ul>
+          <p id="map-help" class="hint">
+            Drag the map to pan. Use the + and − buttons, the mouse wheel, or the + and −
+            keys to zoom. With the map focused, the arrow keys pan and 0 resets the view.
+          </p>
+        </figure>
+      </section>
+
+      <section id="details" aria-labelledby="details-title" hidden>
+        <div class="section-heading">
+          <h2 id="details-title">The year <span id="details-year">2012</span></h2>
+          <p class="source-note">
+            Annual mean CO₂ from NOAA GML Mauna Loa; September sea ice from the NSIDC Sea
+            Ice Index.
+          </p>
+        </div>
+
+        <div class="stat-grid">
+          <article class="stat">
+            <h3>Annual mean CO₂</h3>
+            <p class="stat-value">
+              <span id="co2-value">—</span><span class="stat-unit">ppm</span>
+            </p>
+            <p id="co2-context" class="stat-context"></p>
+            <p class="source-note">Mauna Loa Observatory, Hawaii. CO₂ = carbon dioxide.</p>
+          </article>
+          <article class="stat">
+            <h3>September sea ice extent</h3>
+            <p class="stat-value">
+              <span id="ice-value">—</span><span class="stat-unit">million km²</span>
+            </p>
+            <p id="ice-context" class="stat-context"></p>
+            <p id="ice-source" class="source-note"></p>
+          </article>
+        </div>
+
+        <div class="chart-grid">
+          <figure class="chart-wide">
+            <figcaption>
+              <h3>The relationship, year by year</h3>
+              <p>
+                Each dot is one year. The faint path follows the years in order; the
+                dashed line is a least-squares fit.
+              </p>
+            </figcaption>
+            <div
+              id="scatter"
+              class="chart"
+              role="img"
+              aria-label="Scatter plot of annual mean CO₂ against September sea ice extent from 1979 to 2025."
+            ></div>
+            <p id="scatter-caption" class="chart-caption"></p>
+          </figure>
+
+          <figure>
+            <figcaption>
+              <h3>Annual mean CO₂</h3>
+              <p>Atmospheric CO₂ at Mauna Loa.</p>
+            </figcaption>
+            <div
+              id="co2-series"
+              class="chart"
+              role="img"
+              aria-label="Line chart of annual mean CO₂ from 1979 to 2025."
+            ></div>
+            <p id="co2-series-caption" class="chart-caption"></p>
+          </figure>
+
+          <figure>
+            <figcaption>
+              <h3>September sea ice extent</h3>
+              <p>Arctic sea ice, September monthly mean.</p>
+            </figcaption>
+            <div
+              id="ice-series"
+              class="chart"
+              role="img"
+              aria-label="Line chart of September Arctic sea ice extent from 1979 to 2025."
+            ></div>
+            <p id="ice-series-caption" class="chart-caption"></p>
+          </figure>
+        </div>
+
+        <details class="data-table">
+          <summary>View all 47 years as a table</summary>
+          <div class="table-wrap">
+            <table>
+              <caption>
+                Annual mean CO₂ and September Arctic sea ice extent, 1979–2025.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Year</th>
+                  <th scope="col">CO₂ (ppm)</th>
+                  <th scope="col">September sea ice (million km²)</th>
+                  <th scope="col">Sea ice source</th>
+                </tr>
+              </thead>
+              <tbody id="data-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section id="about" class="about" aria-labelledby="about-title">
+        <h2 id="about-title">About the data</h2>
+        <p>
+          The app compares two measured records. The CO₂ series is the annual mean of the
+          monthly mean CO₂ at Mauna Loa. The sea ice series is the September monthly mean
+          extent in the Arctic, the month of the annual minimum. Both are shown in SI and
+          scientific units used by the source agencies.
+        </p>
+        <ul>
+          <li>
+            <strong>CO₂:</strong> NOAA Global Monitoring Laboratory,
+            <a href="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt"
+              >Mauna Loa monthly CO₂</a
+            >. The file is read from NOAA by the browser each time the page loads. The
+            annual value is the mean of the 12 monthly values in the file; years with fewer
+            than 12 months are not shown. Negative values in the file's statistics columns
+            mark missing or interpolated months and are not treated as measurements.
+          </li>
+          <li>
+            <strong>Sea ice:</strong> National Snow and Ice Data Center, Sea Ice Index,
+            Version 4 (G02135),
+            <a href="https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/"
+              >Arctic monthly extent</a
+            >. The value is the September extent from the monthly file. Values of -9999
+            mark missing months and are treated as missing. 2025 uses the NSIDC-0803
+            processing stream; earlier years use NSIDC-0051.
+          </li>
+          <li>
+            <strong>Years:</strong> 1979–2025. The sea ice record starts in 1979, and 2026
+            is left out because the CO₂ year is not complete (the CO₂ file runs through
+            September 2026). A complete year is one with all 12 monthly CO₂ values and a
+            September sea ice value.
+          </li>
+          <li>
+            <strong>Map:</strong> September extent polygons and ice-edge lines from the
+            NSIDC monthly shapefiles, projected to EPSG:3411. NSIDC's download server does
+            not send CORS headers, so the browser cannot fetch those files directly.
+            <code>scripts/build_data.py</code> downloads the original CSV and shapefiles
+            and writes the copies in <code>web/data/</code>. Small isolated grid cells
+            more than 4,000 km from the pole are dropped from the map; they are source
+            artifacts, not Arctic ice. Land comes from Natural Earth 1:110m.
+          </li>
+          <li>
+            <strong>Interpretation:</strong> the scatter and trend line describe an
+            association between two time series, not a causal claim. Many other factors
+            affect sea ice.
+          </li>
+        </ul>
+        <p class="source-note">
+          Citations: NOAA GML, “Trends in Atmospheric Carbon Dioxide,” accessed 18 November
+          2026. Fetterer, F., Knowles, K., Meier, W. N., Savoie, M., Windnagel, A. K. &amp;
+          Stafford, T. (2025). <cite>Sea Ice Index</cite> (G02135, Version 4). National Snow
+          and Ice Data Center. <a href="https://doi.org/10.7265/a98x-0f50">doi:10.7265/a98x-0f50</a>.
+          Natural Earth, 1:110m land, public domain.
+        </p>
+      </section>
     </main>
+
+    <footer class="site-footer">
+      <p>
+        Built by Kritin Mandala for ESPM 157. Code: MIT License. Data: NOAA GML (public
+        domain, attribution requested), NSIDC Sea Ice Index (Fetterer et al., 2025;
+        <a href="https://doi.org/10.7265/a98x-0f50">doi:10.7265/a98x-0f50</a>), and
+        Natural Earth (public domain).
+      </p>
+    </footer>
   </body>
 </html>

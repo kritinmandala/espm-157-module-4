@@ -1,14 +1,35 @@
-# 🤖 Applications Module
+# 🤖 Applications Module: Arctic sea ice and atmospheric CO₂
 
 [![App check](../../actions/workflows/check.yml/badge.svg)](../../actions/workflows/check.yml)
 
 ## Team Members
 
-🦸
-🦹
+🦸 Kritin Mandala
 
-<!-- Replace with a link to your published app. -->
-🌐 App: <https://espm-157.github.io/app-template/>
+🌐 App: <https://kritinmandala.github.io/espm-157-module-4/>
+
+## The app
+
+The app explores the relationship between atmospheric CO₂ and Arctic sea ice over time. A
+year dropdown shows the annual mean CO₂ at Mauna Loa, the September sea ice extent, the
+scatter and time-series charts, and a September sea ice map for that year. A second slider
+changes only the map, so a reader can sweep through 1979–2025 and see the ice edge move
+while the numbers and charts stay out of the way. The map can be dragged, zoomed with the
+buttons, mouse wheel, or +/− keys, and reset with 0.
+
+Data are read from the original sources: the
+[NOAA GML Mauna Loa CO₂ file](https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt)
+is fetched by the browser at runtime, and the
+[NSIDC Sea Ice Index](https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/) is
+used for the September extent values and map geometry. NSIDC's download server does not send
+CORS headers, so `scripts/build_data.py` creates the small derived copies in `web/data/`
+from the original CSV and shapefiles. The app explains the data, units, missing-value
+handling, and citations on the page itself.
+
+The design decisions, dependency list, test coverage, license analysis, and accessibility
+checks are in [`design.md`](design.md). The tests are in [`tests/`](tests/) and run with
+`pytest tests`. The app is published from `web/` to GitHub Pages by
+[the site workflow](.github/workflows/pages.yml).
 
 ## 🎓 Learning Objectives
 
@@ -33,9 +54,10 @@ In this module you take an analysis from one of the earlier modules and turn it 
 interactive app that a reader outside the class could use. You are in charge of the parts
 that the earlier modules set up for you: dependencies, tests, deployment and the license.
 
-The starter app in [`web/`](web/) is deliberately small. It reads the Our World in Data
-CO₂ file from the climate module with DuckDB, offers two dropdowns and a slider, and draws
-a line chart with Observable Plot. Replace it with your own.
+The starter app in [`web/`](web/) was deliberately small; this submission replaces it with
+an app about Arctic sea ice and Mauna Loa CO₂. The app uses Observable Plot for the charts
+and a projected SVG map built from NSIDC geometry, with plain JavaScript parsing for the
+small data files.
 
 ### Streamlit and client-side apps
 
@@ -125,6 +147,11 @@ playwright install --only-shell chromium
 make test
 ```
 
+The sea ice CSV and map files in `web/data/` are generated from the original NSIDC CSV and
+shapefiles. To rebuild them, install `requirements-build.txt` and run
+`python scripts/build_data.py`. To check the bundled values against fresh downloads, run
+`python scripts/verify_data.py`.
+
 GitHub Actions runs two workflows on every push. The app check runs the tests in a headless
 browser. The site workflow publishes the `web/` folder to GitHub Pages.
 
@@ -134,3 +161,11 @@ one in `web/`. A GitHub Pages site is public even when its repository is private
 ## Links
 
 [🌐 Course Website](https://espm-157.carlboettiger.info/)
+
+## AI use
+
+Kilo (deepseek-v4-flash) helped write the app, the data build script, the tests, and this
+documentation under my direction. I chose the question and data sources, reviewed the data
+cleaning and values, checked the app against the climate-module notebook, ran the tests, and
+checked desktop and phone layouts. No data are generated or placeholder; the app loads NOAA
+and NSIDC data and shows an error if a source fails. See [`DISCLOSURE.md`](DISCLOSURE.md).
